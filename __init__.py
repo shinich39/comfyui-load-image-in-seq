@@ -36,8 +36,8 @@ class LoadImage():
       },
       "required": {
         "dir_path": ("STRING", {"default": "./ComfyUI/input"}),
-        "mode": (["fixed", "increment", "reset"],),
-        "start_index":  ("INT", {"default": 0, "min": 0, "step": 1}),
+        "mode": (["fixed", "increment"],),
+        "index":  ("INT", {"default": 0, "min": 0, "step": 1}),
       },
       "optional": {
         "default_ckpt_name": (comfy_paths.get_filename_list("checkpoints"), ),
@@ -57,42 +57,32 @@ class LoadImage():
     return float("NaN")
 
   CATEGORY = "image"
-  RETURN_TYPES = ("IMAGE", "MASK", "STRING", "INT", "STRING", "STRING", "STRING", "SEED", "INT", "FLOAT", "STRING", "STRING", "FLOAT")
-  RETURN_NAMES = ("image", "mask", "filename", "index", "ckpt_name", "positive", "negative", "seed", "steps", "cfg", "sampler_name", "scheduler", "denoise")
+  RETURN_TYPES = ("IMAGE",  "MASK", "STRING",  "INT",    "STRING",     "STRING",   "STRING",   "INT", "INT",    "FLOAT",  "STRING",       "STRING",     "FLOAT")
+  RETURN_NAMES = ("image",  "mask", "filename","index",  "ckpt_name",  "positive", "negative", "seed", "steps",  "cfg",    "sampler_name", "scheduler",  "denoise")
 
   FUNCTION = "exec"
 
   def exec(self, unique_id, dir_path, mode, index, default_ckpt_name, default_positive, default_negative, default_seed, default_steps, default_cfg, default_sampler_name, default_scheduler, default_denoise):
     if DEBUG:
-      print(f"dir_path: {dir_path}")
+      print(f"#39 unique_id: {unique_id}")
+      print(f"#39 dir_path: {dir_path}")
+      print(f"#39 mode: {mode}")
+      print(f"#39 index: {index}")
 
     if not os.path.isdir(dir_path):
-      raise FileNotFoundError(f"{dir_path} not found.")
-    
-    current_index = start_index
-    if self.loaders.__contains__(unique_id):
-      current_index = self.loaders[unique_id]
-
-    # reset
-    if mode == "reset":
-      current_index = start_index
-      self.loaders[unique_id] = start_index
+      raise FileNotFoundError(f"#39 {dir_path} not found.")
   
     # load
-    image, file_path, file_name, file_index = load_image_from_directory(dir_path, current_index)
-
-    if DEBUG:
-      print(f"file_index: {file_index}")
+    image, file_path, file_name, file_index = load_image_from_directory(dir_path, index)
 
     if image is None:
       raise FileNotFoundError(f"#39 Image not found.")
     
-    # set index
-    if mode == "increment":
-      self.loaders[unique_id] = file_index + 1
-    elif mode == "reset":
-      self.loaders[unique_id] = file_index
-
+    if DEBUG:
+      print(f"#39 file_path: {file_path}")
+      print(f"#39 file_name: {file_name}")
+      print(f"#39 file_index: {file_index}")
+      
     # parse
     p_prompt, n_prompt, setting, parameter = parse_png(file_path)
 
