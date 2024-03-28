@@ -53,9 +53,11 @@ class ComfyUI(BaseFormat):
         self._comfy_png()
 
     def _comfy_png(self):
-        prompt = self._info.get("prompt", {})
+        prompt = self._info.get("prompt", str({}))
         workflow = self._info.get("workflow", {})
         prompt_json = json.loads(prompt)
+
+        print(f"{prompt}")
 
         # find end node of each flow
         end_nodes = list(
@@ -175,22 +177,21 @@ class ComfyUI(BaseFormat):
         )
 
         for p, s in zip(super().PARAMETER_KEY, ComfyUI.SETTING_KEY):
-            print(f"p: {p} s: {s}")
             match p:
                 case k if k in ("model", "sampler"):
                     self._parameter[p] = str(remove_quotes(longest_flow.get(s)))
                 case "seed":
                     self._parameter[p] = (
-                        longest_flow.get("seed")
+                        str(longest_flow.get("seed"))
                         if longest_flow.get("seed")
-                        else longest_flow.get("noise_seed")
+                        else str(longest_flow.get("noise_seed"))
                     )
                 case "steps":
-                    self._parameter["steps"] = longest_flow.get(s)
+                    self._parameter["steps"] = str(longest_flow.get(s))
                 case "cfg":
-                    self._parameter["cfg"] = longest_flow.get(s)
+                    self._parameter["cfg"] = str(longest_flow.get(s))
                 case "denoise":
-                    self._parameter["denoise"] = longest_flow.get(s)
+                    self._parameter["denoise"] = str(longest_flow.get(s))
                 case "size":
                     self._parameter["size"] = str(self._width) + "x" + str(self._height)
                 case _:

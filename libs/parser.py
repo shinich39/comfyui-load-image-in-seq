@@ -15,9 +15,9 @@ def parse_png(file_path):
       raise Exception("Only supported for PNG format")
     
     parser = ComfyUI(info=info, width=width, height=height)
-    positive = None if not hasattr(parser, "positive") else parser.positive
-    negative = None if not hasattr(parser, "negative") else parser.negative
-    setting = None if not hasattr(parser, "setting") else parser.setting
-    parameter = {} if not hasattr(parser, "parameter") else parser.parameter
+    positive = parser.positive
+    negative = parser.negative
+    setting = parser.setting
+    parameter = parser.parameter
 
     return positive, negative, setting, parameter

@@ -29,7 +29,7 @@ class LoadImage():
       },
       "required": {
         "dir_path": ("STRING", {"default": "./ComfyUI/input"}),
-        "mode": (["fixed", "increment", "reset"],),
+        "mode": (["fixed", "increment"],),
         "start_index":  ("INT", {"default": 0, "min": 0, "step": 1}),
       },
       "optional": {
@@ -57,7 +57,10 @@ class LoadImage():
 
   def exec(self, unique_id, dir_path, mode, start_index, default_ckpt_name, default_positive, default_negative, default_seed, default_steps, default_cfg, default_sampler_name, default_scheduler, default_denoise):
     if DEBUG:
+      print(f"unique_id: {unique_id}")
       print(f"dir_path: {dir_path}")
+      print(f"mode: {mode}")
+      print(f"start_index: {start_index}")
 
     if not os.path.isdir(dir_path):
       raise FileNotFoundError(f"{dir_path} not found.")
@@ -66,26 +69,28 @@ class LoadImage():
     if self.loaders.__contains__(unique_id):
       current_index = self.loaders[unique_id]
 
-    # reset
-    if mode == "reset":
+    if mode == "fixed":
       current_index = start_index
-      self.loaders[unique_id] = start_index
   
     # load
     image, file_path, file_name, file_index = load_image_from_directory(dir_path, current_index)
 
-    if DEBUG:
-      print(f"file_index: {file_index}")
-
     if image is None:
       raise FileNotFoundError(f"Image not found.")
     
-    # set index
+    if DEBUG:
+      print(f"file_path: {file_path}")
+      print(f"file_name: {file_name}")
+      print(f"curr_index: {file_index}")
+    
+    # save index
+    self.loaders[unique_id] = file_index
     if mode == "increment":
-      self.loaders[unique_id] = file_index + 1
-    elif mode == "reset":
-      self.loaders[unique_id] = file_index
+      self.loaders[unique_id] += 1
 
+    if DEBUG:
+      print(f"next_index: {self.loaders[unique_id]}")
+      
     # parse
     p_prompt, n_prompt, setting, parameter = parse_png(file_path)
 
@@ -95,15 +100,15 @@ class LoadImage():
       print(f"setting: {setting}")
       print(f"parameter: {parameter}")
 
-    model = default_ckpt_name if "model" not in parameter else parameter["model"]
-    positive = default_positive if p_prompt is None else p_prompt
-    negative = default_negative if n_prompt is None else n_prompt
-    seed = default_seed if "seed" not in parameter else parameter["seed"]
-    steps = default_steps if "steps" not in parameter else parameter["steps"]
-    cfg = default_cfg if "cfg" not in parameter else parameter["cfg"]
-    sampler_name = default_sampler_name if "sampler" not in parameter else parameter["sampler"]
-    scheduler = default_scheduler if "scheduler" not in parameter else parameter["scheduler"]
-    denoise = default_denoise if "denoise" not in parameter else parameter["denoise"]
+    model = default_ckpt_name if parameter["model"] == "None" else parameter["model"]
+    positive = default_positive if not p_prompt else p_prompt
+    negative = default_negative if not n_prompt else n_prompt
+    seed = default_seed if parameter["seed"] == "None" else parameter["seed"]
+    steps = default_steps if parameter["steps"] == "None" else parameter["steps"]
+    cfg = default_cfg if parameter["cfg"] == "None" else parameter["cfg"]
+    sampler_name = default_sampler_name if parameter["sampler"] == "None" else parameter["sampler"]
+    scheduler = default_scheduler if parameter["scheduler"] == "None" else parameter["scheduler"]
+    denoise = default_denoise if parameter["denoise"] == "None" else parameter["denoise"]
 
     # image
     img = ImageOps.exif_transpose(image)

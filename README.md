@@ -1,6 +1,7 @@
 ## comfyui-load-image-39
 
-This node is load png image sequentially with metadata
+This node is load png image sequentially with metadata.\
+Only supported for PNG format that has been created by ComfyUI.
 
 ## Usage
 
@@ -10,7 +11,7 @@ This node is load png image sequentially with metadata
 
 - Reset index
 
-Change 'mode' to 'reset'
+Run once after change mode to 'fixed'
 
 ## Credits
 
