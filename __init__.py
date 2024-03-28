@@ -50,7 +50,7 @@ class LoadImage():
     return float("NaN")
 
   CATEGORY = "image"
-  RETURN_TYPES = ("IMAGE", "MASK", "STRING", "INT", "STRING", "STRING", "STRING", "SEED", "INT", "FLOAT", "STRING", "STRING", "FLOAT")
+  RETURN_TYPES = ("IMAGE", "MASK", "STRING", "INT", "STRING", "STRING", "STRING", "INT", "INT", "FLOAT", "STRING", "STRING", "FLOAT")
   RETURN_NAMES = ("image", "mask", "filename", "index", "ckpt_name", "positive", "negative", "seed", "steps", "cfg", "sampler_name", "scheduler", "denoise")
 
   FUNCTION = "exec"
