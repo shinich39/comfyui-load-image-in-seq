@@ -146,16 +146,10 @@ def update_workflow_index(json_data):
   server.PromptServer.instance.send_sync("load-image-39-update-index", updates)
 
 def onprompt(json_data):
-  print(f"#39 onprompt: {json_data}")
+  if DEBUG:
+    print(f"#39 prompt: {json_data}")
 
   update_workflow_index(json_data)
-
-  # for k, v in json_data['prompt'].items():
-  #   if v['class_type'] == "Load Image #39":
-
-  #   for k2, v2 in v['inputs'].items():
-  #     if isinstance(v2, str) and '$GlobalSeed.value$' in v2:
-  #       v['inputs'][k2] = v2.replace('$GlobalSeed.value$', str(value))
 
   return json_data
 
