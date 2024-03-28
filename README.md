@@ -7,7 +7,7 @@ Only supported for PNG format that has been created by ComfyUI.
 
 - Add node > image > Load Image #39
 
-![image](./images/1.png)  
+![image](./images/1.png)
 
 - Reset index
 

@@ -57,8 +57,6 @@ class ComfyUI(BaseFormat):
         workflow = self._info.get("workflow", {})
         prompt_json = json.loads(prompt)
 
-        print(f"{prompt}")
-
         # find end node of each flow
         end_nodes = list(
             filter(
