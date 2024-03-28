@@ -29,7 +29,7 @@ class LoadImage():
       },
       "required": {
         "dir_path": ("STRING", {"default": "./ComfyUI/input"}),
-        "mode": (["fixed", "increment", "decrement", "reset"],),
+        "mode": (["fixed", "increment", "reset"],),
         "start_index":  ("INT", {"default": 0, "min": 0, "step": 1}),
       },
       "optional": {
@@ -83,8 +83,6 @@ class LoadImage():
     # set index
     if mode == "increment":
       self.loaders[unique_id] = file_index + 1
-    elif mode == "decrement":
-      self.loaders[unique_id] = file_index - 1
     elif mode == "reset":
       self.loaders[unique_id] = file_index
 

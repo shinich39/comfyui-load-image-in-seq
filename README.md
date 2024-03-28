@@ -12,7 +12,6 @@ This node is load png image sequentially with metadata
 
 Change 'mode' to 'reset'
 
-
 ## Credits
 
 - [was-node-suite-comfyui](https://github.com/WASasquatch/was-node-suite-comfyui)
