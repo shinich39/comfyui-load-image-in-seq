@@ -29,7 +29,7 @@ class LoadImage():
     pass
 
   @classmethod
-  def INPUT_TYPES(cls):
+  def INPUT_TYPES(self):
     return {
       "hidden": {
         "unique_id": "UNIQUE_ID",
@@ -53,7 +53,7 @@ class LoadImage():
     }
   
   @classmethod
-  def IS_CHANGED(cls, **kwargs):
+  def IS_CHANGED(self, **kwargs):
     return float("NaN")
 
   CATEGORY = "image"
