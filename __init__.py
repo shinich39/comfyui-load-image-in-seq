@@ -114,11 +114,12 @@ class LoadImage():
     else:
       mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
 
-    updates = {}
-    updates[unique_id] = file_index + 1 if file_index + 1 < file_length else 0
+    if mode == "increment":
+      updates = {}
+      updates[unique_id] = file_index + 1 if file_index + 1 < file_length else 0
 
-    # update index
-    server.PromptServer.instance.send_sync("load-image-39", updates)
+      # update index
+      server.PromptServer.instance.send_sync("load-image-39", updates)
 
     return (image, mask.unsqueeze(0), file_name, file_index, model, positive, negative, seed, steps, cfg, sampler_name, scheduler, denoise)
 
