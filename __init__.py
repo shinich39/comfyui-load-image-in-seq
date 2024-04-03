@@ -17,7 +17,7 @@ from .libs.parser import parse_png
 from .libs.utils import load_image_from_directory
 
 DEBUG = False
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 WEB_DIRECTORY = "./js"
 NODE_CLASS_MAPPINGS = {}
 NODE_DISPLAY_NAME_MAPPINGS = {}
