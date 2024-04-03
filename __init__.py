@@ -2,8 +2,8 @@
 @author: shinich39
 @title: Load Image #39
 @nickname: Load Image #39
-@version: 1.0.0
-@description: Load png image sequentially with metadata
+@version: 1.0.1
+@description: Load png image sequentially with metadata.
 """
 
 import server
@@ -32,7 +32,7 @@ class LoadImage():
   def INPUT_TYPES(cls):
     return {
       "hidden": {
-        "unique_id": "UNIQUE_ID",
+        "unique_id": "UNIQUE_ID", # for update index
       },
       "required": {
         "dir_path": ("STRING", {"default": "./ComfyUI/input"}),
@@ -57,8 +57,8 @@ class LoadImage():
     return float("NaN")
 
   CATEGORY = "image"
-  RETURN_TYPES = ("IMAGE",  "MASK", "STRING",  "INT",    "STRING",     "STRING",   "STRING",   "INT", "INT",    "FLOAT",  "STRING",       "STRING",     "FLOAT")
-  RETURN_NAMES = ("image",  "mask", "filename","index",  "ckpt_name",  "positive", "negative", "seed", "steps",  "cfg",    "sampler_name", "scheduler",  "denoise")
+  RETURN_TYPES = ("IMAGE", "MASK", "STRING", "INT", "STRING", "STRING", "STRING", "INT", "INT", "FLOAT", "STRING", "STRING", "FLOAT")
+  RETURN_NAMES = ("image", "mask", "filename", "index", "ckpt_name", "positive", "negative", "seed", "steps",  "cfg", "sampler_name", "scheduler", "denoise")
 
   FUNCTION = "exec"
 
@@ -73,7 +73,7 @@ class LoadImage():
       raise FileNotFoundError(f"#39 {dir_path} not found.")
   
     # load
-    image, file_path, file_name, file_index = load_image_from_directory(dir_path, index)
+    image, file_path, file_name, file_length, file_index = load_image_from_directory(dir_path, index)
 
     if image is None:
       raise FileNotFoundError(f"#39 Image not found.")
@@ -81,6 +81,7 @@ class LoadImage():
     if DEBUG:
       print(f"#39 file_path: {file_path}")
       print(f"#39 file_name: {file_name}")
+      print(f"#39 file_length: {file_length}")
       print(f"#39 file_index: {file_index}")
       
     # parse
@@ -113,47 +114,13 @@ class LoadImage():
     else:
       mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
 
+    updates = {}
+    updates[unique_id] = file_index + 1 if file_index + 1 < file_length else 0
+
+    # update index
+    server.PromptServer.instance.send_sync("load-image-39", updates)
+
     return (image, mask.unsqueeze(0), file_name, file_index, model, positive, negative, seed, steps, cfg, sampler_name, scheduler, denoise)
-
-# to js
-def update_workflow_index(json_data):
-  nodes = json_data['extra_data']['extra_pnginfo']['workflow']['nodes']
-  widget_idx_map = json_data['extra_data']['extra_pnginfo']['workflow']['widget_idx_map']
-  prompt = json_data['prompt']
-
-  updates = {}
-  for node in nodes:
-    node_id = str(node['id']) # unique_id
-    node_type = str(node['type']) # node name
-    if DEBUG:
-      print(f"#39 node_id {node_id}")
-      print(f"#39 node_type {node_type}")
-       
-    if node_type == "Load Image #39" and node_id in prompt:
-      node_inputs = prompt[node_id]['inputs']
-      
-      mode = node_inputs["mode"]
-      index = node_inputs["index"]
-
-      if mode == "increment":
-        index += 1
-
-      updates[node_id] = index
-
-  if DEBUG:
-    print(f"#39 updates {updates}")
-
-  server.PromptServer.instance.send_sync("load-image-39-update-index", updates)
-
-def onprompt(json_data):
-  if DEBUG:
-    print(f"#39 prompt: {json_data}")
-
-  update_workflow_index(json_data)
-
-  return json_data
-
-server.PromptServer.instance.add_on_prompt_handler(onprompt)
 
 NODE_CLASS_MAPPINGS["Load Image #39"] = LoadImage
 NODE_DISPLAY_NAME_MAPPINGS["Load Image #39"] = "Load Image #39"

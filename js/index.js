@@ -3,10 +3,6 @@ import { api } from "../../scripts/api.js";
 const DEBUG = false;
 const NODE_TYPE = "Load Image #39";
 
-if (DEBUG) {
-  console.log("#39 js loaded");
-}
-
 function updateIndexHandler(event) {
 	const nodes = app.graph._nodes_by_id;
   const updates = event.detail;
@@ -35,6 +31,9 @@ function updateIndexHandler(event) {
     const indexWidget = node.widgets.find(function(item) {
       return item.name == "index";
     });
+    if (!indexWidget) {
+      continue;
+    }
 
     if (DEBUG) {
       console.log("#39 index widget:", indexWidget);
@@ -46,4 +45,4 @@ function updateIndexHandler(event) {
 	}
 }
 
-api.addEventListener("load-image-39-update-index", updateIndexHandler);
+api.addEventListener("load-image-39", updateIndexHandler);

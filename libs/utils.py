@@ -20,7 +20,7 @@ def load_image_from_directory(dir_path, image_index):
   file_length = len(file_list)
 
   if file_length == 0:
-    return None, None, None, -1
+    return None, None, None, 0, -1
   
   file_index = (file_length + image_index) % file_length
   file_path = file_list[file_index]
@@ -28,4 +28,4 @@ def load_image_from_directory(dir_path, image_index):
 
   image = Image.open(file_path)
 
-  return image, file_path, file_name, file_index
+  return image, file_path, file_name, file_length, file_index

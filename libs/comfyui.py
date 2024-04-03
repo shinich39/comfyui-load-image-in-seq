@@ -33,7 +33,7 @@ class ComfyUI(BaseFormat):
         "CLIPTextEncodeSDXL",
         "CLIPTextEncodeSDXLRefiner",
     ]
-    SAVE_IMAGE_TYPE = ["SaveImage", "Image Save", "SDPromptSaver"]
+    SAVE_IMAGE_TYPE = ["SaveImage", "Image Save"]
 
     SETTING_KEY = [
         "ckpt_name",
@@ -76,6 +76,14 @@ class ComfyUI(BaseFormat):
                 longest_flow = flow
                 longest_nodes = nodes
                 longest_flow_len = len(nodes)
+
+        # fix #39
+        if isinstance(self._positive, dict):
+            self._positive = ""
+
+        # fix #39
+        if isinstance(self._positive, dict):
+            self._negative = ""
 
         if not self._is_sdxl:
             self._raw = "\n".join(
@@ -296,8 +304,8 @@ class ComfyUI(BaseFormat):
                 try:
                     match node_type:
                         case "CLIPTextEncode":
-                            # SDXLPromptStyler & SDPromptReader
                             if isinstance(inputs["text"], list):
+                                # SDXLPromptStyler
                                 text = int(inputs["text"][0])
                                 traverse_result = self._comfy_traverse(
                                     prompt, str(text)
@@ -306,6 +314,8 @@ class ComfyUI(BaseFormat):
                                     self._positive = traverse_result[0]
                                     self._negative = traverse_result[1]
                                 elif isinstance(traverse_result, dict):
+                                    return traverse_result
+                                elif isinstance(traverse_result, str):
                                     return traverse_result
                                 return
                             elif isinstance(inputs["text"], str):
@@ -429,17 +439,17 @@ class ComfyUI(BaseFormat):
                     node += last_node1 + last_node2
                 except:
                     print("comfyUI ConditioningCombine error")
-            # SD Prompt Reader Node
-            case "SDPromptReader":
+            case "ConditioningConcat":
                 try:
-                    return json.loads(prompt[end_node]["is_changed"][0])
-                except:
-                    print("comfyUI SDPromptReader error")
-            case "SDParameterGenerator":
-                try:
-                    return inputs
-                except:
-                    print("comfyUI SDParameterGenerator error")
+                    conditioning_to = self._comfy_traverse(
+                        prompt, inputs["conditioning_to"][0]
+                    )
+                    conditioning_from = self._comfy_traverse(
+                        prompt, inputs["conditioning_from"][0]
+                    )
+                    return conditioning_to + conditioning_from # confy do not support BREAK?
+                except Exception as err:
+                    print("comfyUI ConditioningConcat error", err)
             # custom nodes
             case "SDXLPromptStyler":
                 try:
@@ -481,6 +491,24 @@ class ComfyUI(BaseFormat):
                             return result
                         elif isinstance(result, list):
                             last_flow, last_node = result
+                    elif inputs.get("string"):
+                        if isinstance(inputs["string"], list):
+                            text = int(inputs["string"][0])
+                            traverse_result = self._comfy_traverse(
+                                prompt, str(text)
+                            )
+                            return traverse_result
+                        elif isinstance(inputs["string"], str):
+                            return inputs.get("string")
+                    elif inputs.get("text"):
+                        if isinstance(inputs["text"], list):
+                            text = int(inputs["text"][0])
+                            traverse_result = self._comfy_traverse(
+                                prompt, str(text)
+                            )
+                            return traverse_result
+                        elif isinstance(inputs["text"], str):
+                            return inputs.get("text")
                     flow = merge_dict(flow, last_flow)
                     node += last_node
                 except:
