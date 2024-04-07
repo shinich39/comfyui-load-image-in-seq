@@ -1,4 +1,5 @@
 import json
+import re
 
 from .base_format import BaseFormat
 
@@ -448,8 +449,8 @@ class ComfyUI(BaseFormat):
                         prompt, inputs["conditioning_from"][0]
                     )
                     return conditioning_to + conditioning_from # confy do not support BREAK?
-                except Exception as err:
-                    print("comfyUI ConditioningConcat error", err)
+                except:
+                    print("comfyUI ConditioningConcat error")
             # custom nodes
             case "SDXLPromptStyler":
                 try:
@@ -461,6 +462,39 @@ class ComfyUI(BaseFormat):
                     return inputs.get("seed")
                 except:
                     print("comfyUI CR Seed error")
+            case "Text Pipe #39":
+                try:
+                    pattern = inputs["pattern"]
+                    true_value = inputs["true"]
+                    false_value = inputs["false"]
+                    output_mode = inputs["output_mode"]
+
+                    text = ""
+                    if isinstance(inputs["text"], list):
+                        text = self._comfy_traverse(prompt, inputs["text"][0])
+                    else:
+                        text = inputs["text"]
+
+                    is_true = bool(re.search(pattern, text))
+
+                    new_text = ""
+                    if is_true == True:
+                        new_text = true_value
+                    else:
+                        new_text = false_value
+
+                    if output_mode == "change":
+                        text = new_text
+                    elif output_mode == "prepend":
+                        text = new_text + text
+                    elif output_mode == "append":
+                        text = text + new_text
+                    elif output_mode == "replace":
+                        text = re.sub(pattern, new_text, text)
+
+                    return text
+                except:
+                    print("comfyUI Text Pipe #39 error")
             case _:
                 try:
                     last_flow = {}
