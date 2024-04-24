@@ -17,7 +17,7 @@ Only supported for PNG image that has been created by ComfyUI.
   Reset index when reached end of file.
   Fix: Primitive string -> CLIP Text Encord (Prompt)
 
-## Credits
+## References
 
 - [was-node-suite-comfyui](https://github.com/WASasquatch/was-node-suite-comfyui)
 - [comfyui-prompt-reader-node](https://github.com/receyuki/comfyui-prompt-reader-node)
