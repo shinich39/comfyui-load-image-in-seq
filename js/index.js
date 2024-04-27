@@ -12,26 +12,6 @@ $el("style", {
 	parent: document.body,
 });
 
-async function save(key, value) {
-  const response = await api.fetchApi("/shinich39/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({key, value}),
-  });
-
-  if (DEBUG) {
-    console.log("POST /shinich39/db", response);
-  }
-
-  if (response.status === 200) {
-    return true;
-  }
-
-  throw new Error(response.statusText);
-}
-
 function updateIndexHandler(event) {
 	const nodes = app.graph._nodes_by_id;
   const updates = event.detail;
