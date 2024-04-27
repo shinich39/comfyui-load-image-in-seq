@@ -12,8 +12,6 @@ import torch
 import os
 import comfy
 import folder_paths as comfy_paths
-from server import PromptServer
-from aiohttp import web
 from PIL import Image, ImageOps
 from .libs.parser import parse_png
 from .libs.utils import load_image_from_directory
