@@ -5,12 +5,12 @@ import { $el } from "../../scripts/ui.js";
 const DEBUG = false;
 const CLASS_NAME = "Load Image In Seq";
 
-$el("style", {
-	textContent: `
-	.shinich39-load-image-in-seq-text { background-color: #222; padding: 2px; color: #ddd; }
-  `,
-	parent: document.body,
-});
+// $el("style", {
+// 	textContent: `
+// 	.shinich39-load-image-in-seq-text { background-color: #222; padding: 2px; color: #ddd; }
+//   `,
+// 	parent: document.body,
+// });
 
 function updateIndexHandler(event) {
 	const nodes = app.graph._nodes_by_id;
@@ -56,15 +56,14 @@ function updateIndexHandler(event) {
 
 api.addEventListener("load-image-in-seq", updateIndexHandler);
 
-app.registerExtension({
-	name: "shinich39.LoadImageInSeq",
-	nodeCreated(node, app) {
-    if (node.comfyClass !== CLASS_NAME) {
-      return;
-    }
-  
-    if (DEBUG) {
-      console.log("LoadImageInSeq.node", node);
-    }
-  }
-});
+// app.registerExtension({
+// 	name: "shinich39.LoadImageInSeq",
+// 	nodeCreated(node, app) {
+//     if (node.comfyClass !== CLASS_NAME) {
+//       return;
+//     }
+//     if (DEBUG) {
+//       console.log("LoadImageInSeq.node", node);
+//     }
+//   }
+// });
