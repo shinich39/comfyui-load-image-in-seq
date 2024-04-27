@@ -76,13 +76,13 @@ class ComfyUI(BaseFormat):
                 longest_flow = flow
                 longest_nodes = nodes
                 longest_flow_len = len(nodes)
-
+        
         # fix
         if isinstance(self._positive, dict):
             self._positive = ""
 
         # fix
-        if isinstance(self._positive, dict):
+        if isinstance(self._negative, dict):
             self._negative = ""
 
         if not self._is_sdxl:
@@ -246,7 +246,11 @@ class ComfyUI(BaseFormat):
                     for key, value in inputs.items():
                         match key:
                             case "model":
-                                traverse_result = self._comfy_traverse(prompt, value[0])
+                                # Load image In Seq
+                                if prompt[value[0]]["class_type"] == "Load Image In Seq":
+                                    traverse_result = prompt[value[0]]["inputs"]["ckpt_name"]
+                                else:
+                                    traverse_result = self._comfy_traverse(prompt, value[0])
                                 if isinstance(traverse_result, tuple):
                                     last_flow1, last_node1 = traverse_result
                                 elif isinstance(traverse_result, dict):
@@ -307,14 +311,15 @@ class ComfyUI(BaseFormat):
                             if isinstance(inputs["text"], list):
                                 # SDXLPromptStyler
                                 text = int(inputs["text"][0])
-                                traverse_result = self._comfy_traverse(
-                                    prompt, str(text)
-                                )
+                                traverse_result = self._comfy_traverse(prompt, str(text))
                                 if isinstance(traverse_result, tuple):
                                     self._positive = traverse_result[0]
                                     self._negative = traverse_result[1]
                                 elif isinstance(traverse_result, dict):
-                                    return traverse_result
+                                    # Load image In Seq
+                                    self._positive = traverse_result.get("positive")
+                                    self._negative = traverse_result.get("negative")
+                                    # return traverse_result
                                 elif isinstance(traverse_result, str):
                                     return traverse_result
                                 return
@@ -326,16 +331,20 @@ class ComfyUI(BaseFormat):
                             if isinstance(inputs["text_g"], list):
                                 text_g = int(inputs["text_g"][0])
                                 text_l = int(inputs["text_l"][0])
-                                prompt_styler_g = self._comfy_traverse(
-                                    prompt, str(text_g)
-                                )
-                                prompt_styler_l = self._comfy_traverse(
-                                    prompt, str(text_l)
-                                )
-                                self._positive_sdxl["Clip G"] = prompt_styler_g[0]
-                                self._positive_sdxl["Clip L"] = prompt_styler_l[0]
-                                self._negative_sdxl["Clip G"] = prompt_styler_g[1]
-                                self._negative_sdxl["Clip L"] = prompt_styler_l[1]
+                                prompt_styler_g = self._comfy_traverse(prompt, str(text_g))
+                                prompt_styler_l = self._comfy_traverse(prompt, str(text_l))
+
+                                # Load Image In Seq
+                                if isinstance(prompt_styler_g, dict) and isinstance(prompt_styler_l, dict):
+                                    self._positive_sdxl["Clip G"] = prompt_styler_g.get("positive")
+                                    self._positive_sdxl["Clip L"] = prompt_styler_l.get("positive")
+                                    self._negative_sdxl["Clip G"] = prompt_styler_g.get("negative")
+                                    self._negative_sdxl["Clip L"] = prompt_styler_l.get("negative")
+                                else:
+                                    self._positive_sdxl["Clip G"] = prompt_styler_g[0]
+                                    self._positive_sdxl["Clip L"] = prompt_styler_l[0]
+                                    self._negative_sdxl["Clip G"] = prompt_styler_g[1]
+                                    self._negative_sdxl["Clip L"] = prompt_styler_l[1]
                                 return
                             elif isinstance(inputs["text_g"], str):
                                 return {
@@ -461,6 +470,12 @@ class ComfyUI(BaseFormat):
                     return inputs.get("seed")
                 except:
                     print("comfyUI CR Seed error")
+            # Load Image In Seq
+            case "Load Image In Seq":
+                try:
+                    return inputs
+                except:
+                    print("comfyUI Load Image In Seq error")
             case _:
                 try:
                     last_flow = {}
