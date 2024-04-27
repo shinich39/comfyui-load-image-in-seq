@@ -1,21 +1,50 @@
+import { app } from "../../scripts/app.js";
 import { api } from "../../scripts/api.js";
+import { $el } from "../../scripts/ui.js";
 
 const DEBUG = false;
-const NODE_TYPE = "Load Image #39";
+const CLASS_NAME = "Load Image In Seq";
+
+$el("style", {
+	textContent: `
+	.shinich39-load-image-in-seq-text { background-color: #222; padding: 2px; color: #ddd; }
+  `,
+	parent: document.body,
+});
+
+async function save(key, value) {
+  const response = await api.fetchApi("/shinich39/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({key, value}),
+  });
+
+  if (DEBUG) {
+    console.log("POST /shinich39/db", response);
+  }
+
+  if (response.status === 200) {
+    return true;
+  }
+
+  throw new Error(response.statusText);
+}
 
 function updateIndexHandler(event) {
 	const nodes = app.graph._nodes_by_id;
   const updates = event.detail;
 
   if (DEBUG) {
-    console.log("#39 nodes:", nodes);
-    console.log("#39 updates:", updates);
+    console.log(CLASS_NAME + ".nodes:", nodes);
+    console.log(CLASS_NAME + ".updates:", updates);
   }
 
 	for (let i in nodes) {
 		const node = nodes[i];
 
-    if (node.type !== NODE_TYPE) {
+    if (node.type !== CLASS_NAME) {
       continue;
     }
     if (!node.widgets) {
@@ -23,9 +52,9 @@ function updateIndexHandler(event) {
     }
 
     if (DEBUG) {
-      console.log("#39 node id:", node.id);
-      console.log("#39 node type:", node.type);
-      console.log("#39 node widgets:", node.widgets);
+      console.log(CLASS_NAME + ".node.id:", node.id);
+      console.log(CLASS_NAME + ".node.type:", node.type);
+      console.log(CLASS_NAME + ".node.widgets:", node.widgets);
     }
 
     const indexWidget = node.widgets.find(function(item) {
@@ -36,7 +65,7 @@ function updateIndexHandler(event) {
     }
 
     if (DEBUG) {
-      console.log("#39 index widget:", indexWidget);
+      console.log(CLASS_NAME + ".indexWidget:", indexWidget);
     }
 
     if (updates[node.id] !== undefined) {
@@ -45,4 +74,17 @@ function updateIndexHandler(event) {
 	}
 }
 
-api.addEventListener("load-image-39", updateIndexHandler);
+api.addEventListener("load-image-in-seq", updateIndexHandler);
+
+app.registerExtension({
+	name: "shinich39.LoadImageInSeq",
+	nodeCreated(node, app) {
+    if (node.comfyClass !== CLASS_NAME) {
+      return;
+    }
+  
+    if (DEBUG) {
+      console.log("LoadImageInSeq.node", node);
+    }
+  }
+});

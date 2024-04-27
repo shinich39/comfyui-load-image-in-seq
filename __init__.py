@@ -1,8 +1,8 @@
 """
 @author: shinich39
-@title: Load Image #39
-@nickname: Load Image #39
-@version: 1.0.1
+@title: Load Image In Seq
+@nickname: Load Image In Seq
+@version: 1.0.2
 @description: Load png image sequentially with metadata.
 """
 
@@ -12,19 +12,21 @@ import torch
 import os
 import comfy
 import folder_paths as comfy_paths
+from server import PromptServer
+from aiohttp import web
 from PIL import Image, ImageOps
 from .libs.parser import parse_png
 from .libs.utils import load_image_from_directory
 
 DEBUG = False
-VERSION = "1.0.1"
+VERSION = "1.0.2"
 WEB_DIRECTORY = "./js"
 NODE_CLASS_MAPPINGS = {}
 NODE_DISPLAY_NAME_MAPPINGS = {}
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS"]
 
 # main
-class LoadImage():
+class LoadImageInSeq():
   def __init__(self):
     pass
 
@@ -64,34 +66,34 @@ class LoadImage():
 
   def exec(self, unique_id, dir_path, mode, index, default_ckpt_name, default_positive, default_negative, default_seed, default_steps, default_cfg, default_sampler_name, default_scheduler, default_denoise):
     if DEBUG:
-      print(f"#39 unique_id: {unique_id}")
-      print(f"#39 dir_path: {dir_path}")
-      print(f"#39 mode: {mode}")
-      print(f"#39 index: {index}")
+      print(f"LoadImageInSeq.unique_id: {unique_id}")
+      print(f"LoadImageInSeq.dir_path: {dir_path}")
+      print(f"LoadImageInSeq.mode: {mode}")
+      print(f"LoadImageInSeq.index: {index}")
 
     if not os.path.isdir(dir_path):
-      raise FileNotFoundError(f"#39 {dir_path} not found.")
+      raise FileNotFoundError(f"{dir_path} not found.")
   
     # load
     image, file_path, file_name, file_length, file_index = load_image_from_directory(dir_path, index)
 
     if image is None:
-      raise FileNotFoundError(f"#39 Image not found.")
+      raise FileNotFoundError(f"Image not found.")
     
     if DEBUG:
-      print(f"#39 file_path: {file_path}")
-      print(f"#39 file_name: {file_name}")
-      print(f"#39 file_length: {file_length}")
-      print(f"#39 file_index: {file_index}")
+      print(f"LoadImageInSeq.file_path: {file_path}")
+      print(f"LoadImageInSeq.file_name: {file_name}")
+      print(f"LoadImageInSeq.file_length: {file_length}")
+      print(f"LoadImageInSeq.file_index: {file_index}")
       
     # parse
     p_prompt, n_prompt, setting, parameter = parse_png(file_path)
 
     if DEBUG:
-      print(f"#39 positive: {p_prompt}")
-      print(f"#39 negative: {n_prompt}")
-      print(f"#39 setting: {setting}")
-      print(f"#39 parameter: {parameter}")
+      print(f"LoadImageInSeq.positive: {p_prompt}")
+      print(f"LoadImageInSeq.negative: {n_prompt}")
+      print(f"LoadImageInSeq.setting: {setting}")
+      print(f"LoadImageInSeq.parameter: {parameter}")
 
     model = default_ckpt_name if parameter["model"] == "None" else parameter["model"]
     positive = default_positive if not p_prompt else p_prompt
@@ -119,9 +121,9 @@ class LoadImage():
       updates[unique_id] = file_index + 1 if file_index + 1 < file_length else 0
 
       # update index
-      server.PromptServer.instance.send_sync("load-image-39", updates)
+      server.PromptServer.instance.send_sync("load-image-in-seq", updates)
 
     return (image, mask.unsqueeze(0), file_name, file_index, model, positive, negative, seed, steps, cfg, sampler_name, scheduler, denoise)
 
-NODE_CLASS_MAPPINGS["Load Image #39"] = LoadImage
-NODE_DISPLAY_NAME_MAPPINGS["Load Image #39"] = "Load Image #39"
+NODE_CLASS_MAPPINGS["Load Image In Seq"] = LoadImageInSeq
+NODE_DISPLAY_NAME_MAPPINGS["Load Image In Seq"] = "Load Image In Seq"
