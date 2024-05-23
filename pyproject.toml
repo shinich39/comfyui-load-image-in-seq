@@ -1,0 +1,14 @@
+[project]
+name = "comfyui-load-image-in-seq"
+description = "This node is load png image sequentially with metadata. Only supported for PNG format that has been created by ComfyUI.[w/renamed from comfyui-load-image-39. You need to remove previous one and reinstall to this.]"
+version = "1.0.0"
+license = "LICENSE"
+
+[project.urls]
+Repository = "https://github.com/shinich39/comfyui-load-image-in-seq"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = ""
+DisplayName = "comfyui-load-image-in-seq"
+Icon = ""
