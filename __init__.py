@@ -6,7 +6,6 @@
 @description: Load png image sequentially with metadata.
 """
 
-import server
 import numpy as np
 import torch
 import os
@@ -15,7 +14,7 @@ import folder_paths
 import folder_paths as comfy_paths
 from server import PromptServer
 from aiohttp import web
-from PIL import Image, ImageOps
+from PIL import ImageOps
 from .libs.parser import parse_png
 from .libs.utils import load_image_from_directory
 

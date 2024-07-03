@@ -106,19 +106,19 @@ async function render(node) {
 
 async function increaseIndex(node) {
   const modeWidget = node.widgets.find(function(item) {
-    return item.name == "mode";
+    return item.name === "mode";
   });
   if (!modeWidget || modeWidget.value === "fixed") {
     return;
   }
   const indexWidget = node.widgets.find(function(item) {
-    return item.name == "index";
+    return item.name === "index";
   });
   if (!indexWidget) {
     return;
   }
 
-  // mode: increment
+  // increment
   indexWidget.value = indexWidget.value + 1;
 
   await render(node);
