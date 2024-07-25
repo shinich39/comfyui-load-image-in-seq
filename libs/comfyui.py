@@ -20,7 +20,7 @@ def remove_quotes(string):
 
 class ComfyUI(BaseFormat):
     # comfyui node types
-    KSAMPLER_TYPES = ["KSampler", "KSamplerAdvanced"]
+    KSAMPLER_TYPES = ["KSampler", "KSamplerAdvanced", "Model DB"]
     VAE_ENCODE_TYPE = ["VAEEncode", "VAEEncodeForInpaint"]
     CHECKPOINT_LOADER_TYPE = [
         "CheckpointLoader",
@@ -244,6 +244,9 @@ class ComfyUI(BaseFormat):
                     flow = inputs
                     last_flow1, last_node1, last_flow2, last_node2 = {}, [], {}, []
                     for key, value in inputs.items():
+                        # debug
+                        # print(node_type, key, value)
+
                         match key:
                             case "model":
                                 # Load image In Seq
@@ -260,7 +263,12 @@ class ComfyUI(BaseFormat):
                                     prompt, value[0]
                                 )
                             case "positive":
-                                positive = self._comfy_traverse(prompt, value[0])
+                                # Model DB
+                                if isinstance(value, str):
+                                    positive = value
+                                else:
+                                    positive = self._comfy_traverse(prompt, value[0])
+
                                 if isinstance(positive, str):
                                     self._positive = positive
                                 elif isinstance(positive, dict):
@@ -269,7 +277,12 @@ class ComfyUI(BaseFormat):
                                     else:
                                         self._positive_sdxl.update(positive)
                             case "negative":
-                                negative = self._comfy_traverse(prompt, value[0])
+                                # Model DB
+                                if isinstance(value, str):
+                                    negative = value
+                                else:
+                                    negative = self._comfy_traverse(prompt, value[0])
+
                                 if isinstance(negative, str):
                                     self._negative = negative
                                 elif isinstance(negative, dict):

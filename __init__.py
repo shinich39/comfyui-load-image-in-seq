@@ -2,7 +2,7 @@
 @author: shinich39
 @title: Load Image In Seq
 @nickname: Load Image In Seq
-@version: 1.0.2
+@version: 1.0.3
 @description: Load png image sequentially with metadata.
 """
 
@@ -19,7 +19,7 @@ from .libs.parser import parse_png
 from .libs.utils import load_image_from_directory
 
 DEBUG = False
-VERSION = "1.0.2"
+VERSION = "1.0.3"
 WEB_DIRECTORY = "./js"
 NODE_CLASS_MAPPINGS = {}
 NODE_DISPLAY_NAME_MAPPINGS = {}
@@ -94,25 +94,25 @@ class LoadImageInSeq():
 
   CATEGORY = "image"
   RETURN_TYPES = ("IMAGE", "MASK", "STRING", "MODEL", "CLIP", "VAE", "STRING", "STRING", "INT", "INT", "FLOAT", "STRING", "STRING", "FLOAT")
-  RETURN_NAMES = ("image", "mask", "filename", "ckpt_name", "clip", "vae", "positive", "negative", "seed", "steps",  "cfg", "sampler_name", "scheduler", "denoise")
+  RETURN_NAMES = ("IMAGE", "MASK", "FILE_NAME", "MODEL", "CLIP", "VAE", "POSITIVE", "NEGATIVE", "SEED", "STEPS",  "CFG", "SAMPLER_NAME", "SCHEDULER", "DENOISE")
 
   FUNCTION = "exec"
 
   def exec(self, dir_path, mode, index, filename, ckpt_name, positive, negative, seed, steps, cfg, sampler_name, scheduler, denoise):
     if DEBUG:
-      print(f"LoadImageInSeq.dir_path: {dir_path}")
-      print(f"LoadImageInSeq.mode: {mode}")
-      print(f"LoadImageInSeq.index: {index}")
-      print(f"LoadImageInSeq.filename: {filename}")
-      print(f"LoadImageInSeq.ckpt_name: {ckpt_name}")
-      print(f"LoadImageInSeq.positive: {positive}")
-      print(f"LoadImageInSeq.negative: {negative}")
-      print(f"LoadImageInSeq.seed: {seed}")
-      print(f"LoadImageInSeq.steps: {steps}")
-      print(f"LoadImageInSeq.cfg: {cfg}")
-      print(f"LoadImageInSeq.sampler_name: {sampler_name}")
-      print(f"LoadImageInSeq.scheduler: {scheduler}")
-      print(f"LoadImageInSeq.denoise: {denoise}")
+      print(f"dir_path: {dir_path}")
+      print(f"mode: {mode}")
+      print(f"index: {index}")
+      print(f"filename: {filename}")
+      print(f"ckpt_name: {ckpt_name}")
+      print(f"positive: {positive}")
+      print(f"negative: {negative}")
+      print(f"seed: {seed}")
+      print(f"steps: {steps}")
+      print(f"cfg: {cfg}")
+      print(f"sampler_name: {sampler_name}")
+      print(f"scheduler: {scheduler}")
+      print(f"denoise: {denoise}")
 
     # load image
     image, file_path, file_name, file_length, file_index = load_image_from_directory(dir_path, index)
