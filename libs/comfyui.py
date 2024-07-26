@@ -251,9 +251,10 @@ class ComfyUI(BaseFormat):
                             case "model":
                                 # Load image In Seq
                                 if prompt[value[0]]["class_type"] == "Load Image In Seq":
-                                    traverse_result = prompt[value[0]]["inputs"]["ckpt_name"]
+                                    traverse_result = ({"ckpt_name": prompt[value[0]]["inputs"]["ckpt_name"]}, [value[0]])
                                 else:
                                     traverse_result = self._comfy_traverse(prompt, value[0])
+
                                 if isinstance(traverse_result, tuple):
                                     last_flow1, last_node1 = traverse_result
                                 elif isinstance(traverse_result, dict):
