@@ -14,7 +14,7 @@ This node is load PNG image sequentially with metadata.
 
 - Add node > image > Load Image In Seq
 
-![image-1](./images/1.png)
+![image-1](./images/workflow.png)
 
 - Change index by arrow key.
 - Inpaint > Arrow Right > Inpaint ...
