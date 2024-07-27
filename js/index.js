@@ -32,7 +32,6 @@ $el("style", {
 });
 
 async function getDir(node) {
-  console.log(node)
   if (!node.widgets) {
     throw new Error("Widgets not found.");
   }
