@@ -66,15 +66,20 @@ async function render(node) {
   });
 
   if (!indexWidget) {
-    throw new Error("Index widget not found.");
+    console.error(new Error("Index widget not found."));
+    return;
   }
   
   const images = node.images;
   const index = (images.length + indexWidget.value) % images.length;
   const image = images[index];
 
+  if (!image) {
+    console.error(new Error("Image not found."));
+    return;
+  }
+
   const filenameWidget = node.widgets.find(function(item) { return item.name === "filename"; });
-  // const indexWidget = node.widgets.find(function(item) { return item.name === "index"; });
   const ckptWidget = node.widgets.find(function(item) { return item.name === "ckpt_name"; });
   const positiveWidget = node.widgets.find(function(item) { return item.name === "positive"; });
   const negativeWidget = node.widgets.find(function(item) { return item.name === "negative"; });
@@ -85,6 +90,7 @@ async function render(node) {
   const schedulerWidget = node.widgets.find(function(item) { return item.name === "scheduler"; });
   const denoiseWidget = node.widgets.find(function(item) { return item.name === "denoise"; });
   const maskWidget = node.widgets.find(function(item) { return item.name === "maskeditor"; });
+
 
   if (filenameWidget) {
     filenameWidget.value = image.original_name || "";
@@ -374,19 +380,19 @@ app.registerExtension({
       getDir(node);
     }, 128);
 
-    function keyDownEvent(e) {
+    async function keyDownEvent(e) {
       const { key } = e;
 
       if (key === "ArrowLeft" || key === "ArrowUp") {
         e.preventDefault();
         e.stopPropagation();
         indexWidget.value = indexWidget.value - 1;
-        render(node);
+        await render(node);
       } else if (key === "ArrowRight" || key === "ArrowDown") {
         e.preventDefault();
         e.stopPropagation();
         indexWidget.value = indexWidget.value + 1;
-        render(node);
+        await render(node);
       }
     }
   }
