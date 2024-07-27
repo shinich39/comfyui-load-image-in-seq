@@ -32,6 +32,7 @@ $el("style", {
 });
 
 async function getDir(node) {
+  console.log(node)
   if (!node.widgets) {
     throw new Error("Widgets not found.");
   }
@@ -167,6 +168,14 @@ document.addEventListener('pointerup', (event) => pointerUpEvent(event));
 
 app.registerExtension({
 	name: "shinich39.LoadImageInSeq",
+  setup() {
+    // for (const node of app.graph._nodes) {
+    //   if (node.comfyClass === CLASS_NAME) {
+    //     // initialize after open comfyui
+    //     getDir(node);
+    //   }
+    // }
+  },
 	nodeCreated(node, app) {
     if (node.comfyClass !== CLASS_NAME) {
       return;
@@ -176,7 +185,7 @@ app.registerExtension({
       return item.name === "dir_path";
     });
     pathWidget.callback = function(value) {
-      getDir(node)
+      getDir(node);
     }
 
     const indexWidget = node.widgets.find(function(item) {
@@ -360,10 +369,12 @@ app.registerExtension({
       onResize?.apply(this, arguments);
 		};
 
-    // init
-    getDir(node);
+    // initialize after create a new node
+    // initialize after launched comfyui
+    setTimeout(function() {
+      getDir(node);
+    }, 128);
 
-    
     function keyDownEvent(e) {
       const { key } = e;
 
