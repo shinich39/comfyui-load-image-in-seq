@@ -205,8 +205,14 @@ app.registerExtension({
       return item.name === "negative";
     });
 
+    posWidget.options.getMinHeight = function(e) {
+      return 128;
+    }
     posWidget.options.getMaxHeight = function(e) {
       return 256;
+    }
+    negWidget.options.getMinHeight = function(e) {
+      return 128;
     }
     negWidget.options.getMaxHeight = function(e) {
       return 256;
@@ -231,12 +237,9 @@ app.registerExtension({
       
       maskWidget = node.addDOMWidget("maskeditor", "", container, {
         serialize: false,
-        getMaxHeight: function() {
-          return node.size[0] - 32;
-        },
         getMinHeight: function() {
-          return node.size[0] - 32;
-        }
+          return node.size[0];
+        },
       });
 
       maskWidget.serializeValue = () => undefined;
