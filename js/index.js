@@ -163,6 +163,8 @@ function pathToSrc(filePath) {
   // return `${location.host}/shinich39/liis/get_image?path=${filePath}`;
 }
 
+document.addEventListener('pointerup', (event) => pointerUpEvent(event));
+
 app.registerExtension({
 	name: "shinich39.LoadImageInSeq",
 	nodeCreated(node, app) {
@@ -174,9 +176,6 @@ app.registerExtension({
       return item.name === "dir_path";
     });
     pathWidget.callback = function(value) {
-      if (maskWidget.saveTimer) {
-        clearTimeout(maskWidget.saveTimer);
-      }
       getDir(node)
     }
 
@@ -184,9 +183,6 @@ app.registerExtension({
       return item.name === "index";
     });
     indexWidget.callback = function(value) {
-      if (maskWidget.saveTimer) {
-        clearTimeout(maskWidget.saveTimer);
-      }
       render(node);
     }
 
@@ -274,8 +270,6 @@ app.registerExtension({
 			maskCanvas.addEventListener('pointerdown', (event) => maskWidget.pointerDownEvent(maskWidget, event));
 			maskCanvas.addEventListener('pointermove', (event) => maskWidget.drawMoveEvent(maskWidget, event));
       
-			document.addEventListener('pointerup', (event) => maskWidget.pointerUpEvent(maskWidget, event));
-
       const originalImg = new Image();
       maskWidget.originalImg = originalImg;
       maskWidget.originalImgLoaded = false;
@@ -695,32 +689,26 @@ function pointerDownEvent(self, event) {
   }
 }
 
-function pointerUpEvent(self, event) {
+function pointerUpEvent(event) {
   event.preventDefault();
 
-  self.mousedown_x = null;
-  self.mousedown_y = null;
-  self.drawingMode = false;
-
   // reset all canvas
-  // for (const node of app.graph._nodes) {
-  //   if (node.comfyClass === CLASS_NAME) {
-  //     const w = node.widgets?.find(function(item) { return item.name === "maskeditor"; });
-  //     if (w) {
-  //       w.mousedown_x = null;
-  //       w.mousedown_y = null;
-  //       w.drawingMode = false;
-  //     }
-  //   }
-  // }
+  for (const node of app.graph._nodes) {
+    if (node.comfyClass === CLASS_NAME) {
+      const w = node.widgets?.find(function(item) { return item.name === "maskeditor"; });
+      if (w) {
 
-  if (self.saveTimer) {
-    clearTimeout(self.saveTimer);
+        // call save event
+        if (w.drawingMode) {
+          w.saveEvent(w);
+        }
+
+        w.mousedown_x = null;
+        w.mousedown_y = null;
+        w.drawingMode = false;
+      }
+    }
   }
-
-  self.saveTimer = setTimeout(function() {
-    self.saveEvent(self);
-  }, 32);
 }
 
 async function saveEvent(self) {
@@ -759,39 +747,32 @@ async function saveEvent(self) {
   formData.append('original_path', self.originalPath);
   formData.append('mask_path', self.maskPath);
 
-  await uploadMask(self, formData);
-}
-
-async function uploadMask(self, formData) {
 	await api.fetchApi('/shinich39/liis/save_mask', {
 		method: 'POST',
 		body: formData
 	});
+
+  // console.log("Mask saved.");
 }
 
 async function clearEvent(self) {
-  if (self.saveTimer) {
-    clearTimeout(self.saveTimer);
-  }
-  await removeMask(self, {
-    original_path: self.originalPath,
-    mask_path: self.maskPath,
-  });
-}
-
-async function removeMask(self, req) {
-	await api.fetchApi('/shinich39/liis/remove_mask', {
+  await api.fetchApi('/shinich39/liis/remove_mask', {
 		method: 'POST',
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(req),
+    body: JSON.stringify({
+      original_path: self.originalPath,
+      mask_path: self.maskPath,
+    }),
 	});
 
   // reload mask
   self.maskImgLoaded = false;
   self.maskCtx.clearRect(0,0,self.maskCanvas.width,self.maskCanvas.height);
   self.maskImg.src = pathToSrc(self.maskPath);
+
+  // console.log("Mask removed.");
 }
 
 api.addEventListener("promptQueued", async function() {
