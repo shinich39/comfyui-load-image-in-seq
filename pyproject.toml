@@ -2,7 +2,7 @@
 name = "comfyui-load-image-in-seq"
 description = "This node is load PNG image sequentially with metadata."
 version = "1.0.4"
-license = "LICENSE"
+license = { file = "LICENSE" }
 
 [project.urls]
 Repository = "https://github.com/shinich39/comfyui-load-image-in-seq"
