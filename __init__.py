@@ -179,9 +179,10 @@ class LoadImageInSeq():
     file_path = file_list[(index + len(file_list)) % len(file_list)]
     mask_name = "."+Path(file_path).name
     mask_path = Path(dir_path).joinpath(mask_name).as_posix()
-   
+    is_mask_exists = os.path.exists(mask_path)
+  
     # image
-    image = Image.open(mask_path)
+    image = Image.open(mask_path if is_mask_exists else file_path)
     img = ImageOps.exif_transpose(image)
     image = img.convert("RGB")
     image = np.array(image).astype(np.float32) / 255.0
